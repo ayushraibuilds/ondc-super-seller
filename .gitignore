@@ -1,0 +1,9 @@
+
+# Python overrides
+venv/
+*.db
+.env
+
+# Next.js overrides
+.next/
+node_modules/
