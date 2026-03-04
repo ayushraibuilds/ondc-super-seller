@@ -1,9 +1,35 @@
-
-# Python overrides
+# Python
 venv/
+__pycache__/
+*.pyc
+*.pyo
 *.db
 .env
 
-# Next.js overrides
+# Next.js
 .next/
 node_modules/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+*.log

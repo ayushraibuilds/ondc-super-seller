@@ -1,80 +1,138 @@
 # 🛒 ONDC Super Seller
 
-> Let Indian shopkeepers manage their ONDC catalog through WhatsApp — in Hinglish.
+> Let Indian shopkeepers manage their ONDC catalog through WhatsApp — in Hindi, English, or Hinglish.
 
-A WhatsApp-native inventory management system that converts natural language messages (Hindi, English, Hinglish) into [Beckn protocol](https://beckn.network/) compliant catalogs on the [ONDC](https://ondc.org/) network. A real-time Next.js dashboard provides full visibility and CRUD control.
+[![CI](https://github.com/YOUR_USERNAME/ondc-super-seller/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/ondc-super-seller/actions/workflows/ci.yml)
 
-## Architecture
+A WhatsApp-native inventory management system that converts natural language messages (voice notes, images, and text) into [Beckn protocol](https://beckn.network/) compliant catalogs on the [ONDC](https://ondc.org/) network. A real-time Next.js dashboard provides full visibility, analytics, and CRUD control.
+
+---
+
+## ✨ Features
+
+### WhatsApp Integration
+- 🗣️ **Voice note support** — speak in Hindi/Hinglish, AI transcribes and processes
+- 📸 **Image recognition** — send product photos, AI extracts details
+- 💬 **Natural language CRUD** — add, update, delete products via text
+- 🔤 **Multilingual** — Hindi, English, Hinglish supported natively
+- ⚠️ **Low stock alerts** — automatic WhatsApp notifications when inventory runs low
+
+### Dashboard
+- 📊 **Real-time inventory** — SSE live updates, search, pagination
+- 💰 **Price intelligence** — market price comparison with competitive analysis
+- 📈 **Analytics** — revenue trends, category breakdown, top products
+- 🛒 **Order management** — view, filter, and manage ONDC orders
+- 📋 **Activity logs** — full audit trail of all WhatsApp and dashboard actions
+- 🔔 **Notification center** — in-app alerts for price changes, low stock, orders
+- 🌐 **Multi-language UI** — English ↔ Hindi toggle
+- 🌙 **Theme** — dark/light/system auto-detect
+- 📱 **PWA** — installable on mobile with app shortcuts
+- 📦 **CSV import/export** — bulk catalog management
+- ⚡ **Batch price adjustment** — match market prices in one click
+
+### Infrastructure
+- 🔐 **JWT authentication** — Supabase-powered auth with seller profiles
+- 🧪 **130 automated tests** — unit + integration tests
+- 🐳 **Docker Compose** — single-command local dev setup
+- 🔄 **CI/CD** — GitHub Actions for pytest + Next.js build
+- 🌐 **ONDC sandbox** — protocol-compliant `/search`, `/select`, `/confirm` endpoints
+
+---
+
+## 🏗 Architecture
 
 ```
-📱 WhatsApp Message (Hinglish/English)
+📱 WhatsApp (Voice / Image / Text)
         │
         ▼
 🔀 FastAPI Webhook (/whatsapp-webhook)
    └── Twilio Signature Validation
         │
         ▼
-🧠 LangGraph Agent (Ollama llama3.1)
+🧠 LangGraph Agent (Groq LLM)
    ├── Intent Classifier → ADD / UPDATE / DELETE / UNKNOWN
-   ├── Product Entity Extractor (Pydantic structured output)
+   ├── Entity Extractor (Pydantic structured output)
    ├── Smart Upsert (fuzzy name matching > 0.7 similarity)
    └── Input Sanitizer (HTML strip, price validation)
         │
         ▼
-💾 SQLite (thread-safe with locking)
+💾 Supabase (PostgreSQL + Auth)
         │
         ▼
 📊 Next.js Dashboard (SSE live updates)
-   ├── Real-time inventory table with search & pagination
-   ├── Multi-seller selector
-   ├── Stat cards (total products, value, low stock alerts)
-   └── Add / Edit / Delete via REST API (API key protected)
+   ├── Inventory table with search & CSV export
+   ├── Price intelligence with market comparison
+   ├── Analytics (revenue, categories, trends)
+   ├── Order management
+   ├── ONDC sandbox status
+   └── Notification center + Activity logs
 ```
 
-## Tech Stack
+---
+
+## 🛠 Tech Stack
 
 | Layer | Technology |
 |---|---|
-| AI Agent | LangGraph + Ollama (llama3.1) + Pydantic |
-| API Server | FastAPI + Twilio SDK |
-| Database | SQLite (thread-safe) |
-| Dashboard | Next.js 16 + Tailwind CSS v4 + Framer Motion |
-| Tunnel | ngrok (for WhatsApp webhook) |
+| **AI Agent** | LangGraph + Groq (Llama 3) + Pydantic |
+| **Backend** | FastAPI + Twilio SDK + SlowAPI rate limiter |
+| **Database** | Supabase (PostgreSQL + Auth + Storage) |
+| **Dashboard** | Next.js 16 + Tailwind CSS v4 + Framer Motion |
+| **Testing** | pytest (130 tests) |
+| **DevOps** | Docker Compose + GitHub Actions CI |
+| **Protocols** | ONDC/Beckn compliant catalog schema |
 
-## Setup
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- [Ollama](https://ollama.ai/) with `llama3.1` model pulled
-- ngrok (for WhatsApp webhook)
+- Python 3.12+
+- Node.js 20+
+- Supabase project (free tier works)
+- Groq API key (free tier works)
+- Twilio account (for WhatsApp)
 
-### Backend
+### Option 1: Docker Compose (Recommended)
+
+```bash
+# Clone the repo
+git clone https://github.com/YOUR_USERNAME/ondc-super-seller.git
+cd ondc-super-seller
+
+# Configure environment
+cp backend/.env.example backend/.env
+# Edit backend/.env with your Supabase, Groq, and Twilio credentials
+
+# Start everything
+docker compose up
+```
+
+Backend → `http://localhost:8000` | Dashboard → `http://localhost:3000`
+
+### Option 2: Manual Setup
+
+#### Backend
 
 ```bash
 cd backend
 
-# Create and activate virtual environment
+# Create virtual environment
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
 # Configure environment
-cp .env.example .env  # or edit .env directly
-# Set: LLM_MODEL, API_KEY, TWILIO_AUTH_TOKEN (optional)
+cp .env.example .env
+# Edit .env with your credentials
 
-# Start Ollama (in a separate terminal)
-ollama run llama3.1
-
-# Start the server
-python start_server.py
+# Start server
+uvicorn server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The API will be available at `http://localhost:8000`.
-
-### Dashboard
+#### Dashboard
 
 ```bash
 cd dashboard
@@ -86,50 +144,168 @@ npm install
 npm run dev
 ```
 
-The dashboard will be at `http://localhost:3000`.
-
-### WhatsApp Integration
+#### WhatsApp Webhook
 
 ```bash
 # Start ngrok tunnel
 ngrok http 8000
 
-# Copy the ngrok URL and set it as your Twilio webhook:
+# Set Twilio webhook URL to:
 # https://your-ngrok-url.ngrok.io/whatsapp-webhook
 ```
 
-## API Endpoints
+---
+
+## 🔌 API Reference
+
+### Core Endpoints
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| POST | `/whatsapp-webhook` | Twilio Signature | Receive WhatsApp messages |
-| GET | `/api/catalog` | None | Fetch catalog (supports `limit`, `offset`, `seller_id`) |
-| GET | `/api/catalog/stream` | None | SSE live catalog stream |
-| GET | `/api/sellers` | None | List all seller IDs |
-| POST | `/api/catalog/item` | API Key | Add a product |
-| PUT | `/api/catalog/item/{id}` | API Key | Update a product |
-| DELETE | `/api/catalog/item/{id}` | API Key | Delete a product |
-| GET | `/health` | None | Health check |
+| `POST` | `/whatsapp-webhook` | Twilio Sig | Receive WhatsApp messages (text, voice, image) |
+| `GET` | `/api/v1/catalog` | JWT | Fetch catalog (supports `limit`, `offset`, `seller_id`) |
+| `GET` | `/api/v1/catalog/stream` | JWT | SSE live catalog stream |
+| `POST` | `/api/v1/catalog/item` | JWT | Add a product |
+| `PUT` | `/api/v1/catalog/item/{id}` | JWT | Update a product |
+| `DELETE` | `/api/v1/catalog/item/{id}` | JWT | Delete a product |
+| `POST` | `/api/v1/catalog/import/csv` | JWT | Bulk import from CSV |
 
-## Testing
+### Price Intelligence
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/catalog/price-check` | JWT | Market price comparison report |
+| `GET` | `/api/catalog/export/csv` | JWT | Export catalog as CSV |
+| `POST` | `/api/catalog/batch-price-update` | JWT | Batch update prices to match market |
+
+### Orders & Sellers
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/v1/orders` | JWT | List orders |
+| `POST` | `/api/v1/orders` | JWT | Create order |
+| `GET` | `/api/v1/sellers` | JWT | List sellers |
+| `GET/PUT` | `/api/v1/seller/profile` | JWT | Seller profile CRUD |
+
+### ONDC Protocol
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/ondc/search` | None | Beckn `/search` handler |
+| `POST` | `/api/ondc/select` | None | Beckn `/select` handler |
+| `POST` | `/api/ondc/confirm` | None | Beckn `/confirm` handler |
+| `GET` | `/api/v1/ondc/status` | None | ONDC sandbox connection status |
+
+### Other
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/catalog/item/{id}/image` | JWT | Upload product image |
+| `GET` | `/api/activity` | JWT | Activity/webhook logs |
+| `GET` | `/health` | None | Health check |
+| `POST` | `/api/signup` | None | Create seller account |
+| `POST` | `/api/login` | None | Authenticate seller |
+
+---
+
+## 🧪 Testing
 
 ```bash
 cd backend
 source venv/bin/activate
-pytest test_hinglish.py test_intent.py test_update.py -v
+pytest tests/ -v
 ```
 
-> **Note:** Tests require Ollama running locally with `llama3.1`. They are integration tests that invoke the actual LLM.
+**130 tests** covering:
+- ONDC adapter (Beckn protocol compliance)
+- Webhook integration (text, voice, image messages)
+- Catalog CRUD operations
+- Order management
+- Price reference engine
+- Authentication & rate limiting
+- Seller profile management
 
-## How It Works
+---
 
-1. **Shopkeeper sends a WhatsApp message** like: *"Bhaiya, 10 kilo Aashirvaad atta ka price 450 rupees rakh do"*
-2. **Intent Classifier** detects this is an ADD operation
-3. **Entity Extractor** parses: name="Aashirvaad Atta", price=450, quantity=10, unit="kg"
-4. **Smart Upsert** checks for existing items with similar names (fuzzy matching)
-5. **Beckn Catalog** is generated/updated with proper ONDC schema
-6. **Dashboard** receives the update via SSE and displays it in real-time
+## 📁 Project Structure
 
-## License
+```
+ondc-super-seller/
+├── backend/
+│   ├── server.py              # FastAPI app + CORS + rate limiting
+│   ├── db.py                  # Supabase database operations
+│   ├── langgraph_agent.py     # AI agent (intent + entity extraction)
+│   ├── price_reference.py     # Market price comparison engine
+│   ├── ondc_adapter.py        # Beckn protocol adapter
+│   ├── routes/
+│   │   ├── webhook.py         # WhatsApp webhook (Twilio)
+│   │   ├── catalog.py         # Catalog CRUD + CSV + price check
+│   │   ├── orders.py          # Order management
+│   │   ├── sellers.py         # Seller profiles
+│   │   ├── ondc.py            # ONDC /search /select /confirm
+│   │   ├── images.py          # Product image upload
+│   │   └── auth.py            # JWT auth middleware
+│   ├── tests/                 # 12 test files, 130 tests
+│   ├── requirements.txt
+│   └── Dockerfile
+├── dashboard/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── dashboard/     # Main inventory dashboard
+│   │   │   ├── analytics/     # Revenue & category analytics
+│   │   │   ├── price-check/   # Price intelligence + market comparison
+│   │   │   ├── orders/        # Order management
+│   │   │   ├── import/        # CSV import
+│   │   │   ├── logs/          # Activity & webhook logs
+│   │   │   ├── seller/        # Seller profile
+│   │   │   ├── onboarding/    # Multi-step seller onboarding
+│   │   │   ├── login/         # Authentication
+│   │   │   └── signup/        # Registration
+│   │   └── components/
+│   │       ├── InventoryTable  # Live inventory with search
+│   │       ├── NotificationCenter  # In-app notifications
+│   │       ├── ActivityLog     # Real-time activity feed
+│   │       ├── ThemeToggle     # Dark/light/system theme
+│   │       ├── LangToggle      # EN/Hindi language switch
+│   │       ├── Sparkline       # SVG trend charts
+│   │       └── ...            # StatCards, ProductModal, etc.
+│   ├── public/
+│   │   ├── manifest.json      # PWA manifest with shortcuts
+│   │   └── sw.js              # Service worker (static cache only)
+│   ├── package.json
+│   └── Dockerfile
+├── docker-compose.yml         # Single-command dev setup
+├── .github/workflows/ci.yml   # GitHub Actions CI pipeline
+└── .gitignore
+```
+
+---
+
+## 💡 How It Works
+
+1. **Shopkeeper sends a WhatsApp message** like:  
+   *"Bhaiya, 10 kilo Aashirvaad atta ka price 450 rupees rakh do"*
+
+2. **AI Agent** processes the message:
+   - Intent Classifier → `ADD`
+   - Entity Extractor → `name: "Aashirvaad Atta", price: 450, qty: 10, unit: "kg"`
+
+3. **Smart Upsert** checks for existing items via fuzzy matching (>70% similarity)
+
+4. **Beckn Catalog** is generated with ONDC-compliant schema
+
+5. **Dashboard** receives the update via SSE and displays it instantly
+
+6. **Low stock alerts** are sent automatically when inventory drops below threshold
+
+---
+
+## 🤝 Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+
+---
+
+## 📄 License
 
 MIT
