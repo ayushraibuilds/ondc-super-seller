@@ -33,3 +33,8 @@ htmlcov/
 
 # Docker
 *.log
+backend/__pycache__/
+backend/routes/__pycache__/
+backend/tests/__pycache__/
+backend/middleware/__pycache__/
+backend/venv/

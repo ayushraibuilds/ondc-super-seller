@@ -2,7 +2,7 @@
 
 > Let Indian shopkeepers manage their ONDC catalog through WhatsApp — in Hindi, English, or Hinglish.
 
-[![CI](https://github.com/YOUR_USERNAME/ondc-super-seller/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/ondc-super-seller/actions/workflows/ci.yml)
+[![CI](https://github.com/ondc-super-seller/actions/workflows/ci.yml/badge.svg)](https://github.com/ondc-super-seller/actions/workflows/ci.yml)
 
 A WhatsApp-native inventory management system that converts natural language messages (voice notes, images, and text) into [Beckn protocol](https://beckn.network/) compliant catalogs on the [ONDC](https://ondc.org/) network. A real-time Next.js dashboard provides full visibility, analytics, and CRUD control.
 
@@ -97,7 +97,7 @@ A WhatsApp-native inventory management system that converts natural language mes
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/ondc-super-seller.git
+git clone https://github.com/ondc-super-seller.git
 cd ondc-super-seller
 
 # Configure environment
